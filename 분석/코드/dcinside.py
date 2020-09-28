@@ -10,19 +10,26 @@ tmp=input("작품제목 : ")
 n = 1
 total = 1
 pre_tit = None
-n_url = "https://search.dcinside.com/post/p/{}/sort/latest/q/" + parse.quote(tmp)
+n_url = "https://search.dcinside.com/post/p/{}"
+nm_url = "/sort/latest/q/" + parse.quote(tmp)
 Flag = True
+pre_tit = None
+
 while True:
     m_url = n_url.format(n)
-    req = requests.get(m_url)
+    s_url = m_url + nm_url
+    req = requests.get(s_url)
     source = req.content
 
     bs_obj = BeautifulSoup(source, "html.parser")
 
     f_container = bs_obj.find('ul', {'class', 'sch_result_list'})
 
+    print(s_url)
+
     tit = f_container.find('a', {'class', 'tit_txt'})
     #print(tit)
+
 
     if pre_tit == tit:
         break
@@ -31,10 +38,10 @@ while True:
     con = f_container.findAll('li')
 
     for li in con:
-        n_url = li.find('a').attrs['href']
+        s_url = li.find('a').attrs['href']
 
         driver = webdriver.Chrome('C:/Users/luvub/Desktop/chromedriver_win32/chromedriver.exe')
-        driver.get(n_url)
+        driver.get(s_url)
         soup = bs4.BeautifulSoup(driver.page_source, "html.parser")
 
         if "성인인증" in soup.find('h2').text:
@@ -75,4 +82,3 @@ while True:
 
 
 driver.close()
-
