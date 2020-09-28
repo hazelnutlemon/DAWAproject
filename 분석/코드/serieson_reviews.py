@@ -5,14 +5,19 @@ from selenium import webdriver
 from urllib import parse
 import time
 
-base_url = "https://m.series.naver.com/novel/review.nhn?productNo=5253794&writeArea=on&prime=true#reviewTopAnchor"
-
-maximum = 0
-page = 1
+base_url = "https://m.series.naver.com/novel/detail.nhn?productNo=5204313"
 
 driver = webdriver.Chrome('C:/Users/luvub/Desktop/chromedriver_win32/chromedriver.exe')
 driver.get(base_url)
 soup2 = bs4.BeautifulSoup(driver.page_source, "html.parser")
+
+time.sleep(1)
+comm = driver.find_element_by_css_selector("#ct > div.nstore_open > div.nstore_rental > div.content_activity > ul > li:nth-child(2) > a")
+comm.click()
+time.sleep(1)
+
+maximum = 0
+page = 1
 
 time.sleep(3)
 
@@ -94,7 +99,7 @@ while True:
             print(content.text)
         for content in contents25:
             print(content.text)
-        
+
         next = driver.find_element_by_css_selector('#comment_module > div.__comment_page_area > div > a.u_pg2_btn.u_pg2_next.__comment_page_next')
         next.click()
         time.sleep(0.5)
