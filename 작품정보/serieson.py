@@ -4,27 +4,9 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import bs4
 import pandas as pd
-import time
 
-
-driver = webdriver.Chrome('C:/Users/luvub/Desktop/chromedriver_win32/chromedriver.exe')
-driver.get('https://nid.naver.com/nidlogin.login')
-id = "-"
-pw = "-"
-driver.execute_script("document.getElementsByName('id')[0].value=\'" + id + "\'")
-# time.sleep(1)
-driver.execute_script("document.getElementsByName('pw')[0].value=\'" + pw + "\'")
-# time.sleep(1)
-driver.find_element_by_xpath('//*[@id="frmNIDLogin"]/fieldset/input').click()
-
-time.sleep(0.5) ## 0.5초
-
-
-
-n=9
+n=1
 base_url= "https://series.naver.com/novel/categoryProductList.nhn?categoryTypeCode=all&page={}"
-driver.get(base_url)
-driver.implicitly_wait(3)
 Flag = True
 
 title_list = []
@@ -47,27 +29,21 @@ while True:
     pre_title = title
     con = f_container.findAll('h3')
 
-
     for h3 in con:
-
-
+        #print(h3)
+        em = h3.find('em', {'class', 'ico_age n19'})
+        #print(em)
+        if em in h3:
+            continue
         title_list.append([])
         f_title = h3.find('a').attrs['title']
         n_url = h3.find('a').attrs['href']
 
         m_url = "https://series.naver.com/" + n_url
 
-        #em = h3.find('em', {'class', 'ico_age n19'})
-        #print(em)
-        #if em in h3:
-        #    continue
-        #else:
-            #driver.implicitly_wait(3)
-            #driver.get(m_url)
-
-        driver.implicitly_wait(3)
+        driver = webdriver.Chrome('C:/Users/luvub/Desktop/chromedriver_win32/chromedriver.exe')
+        driver.implicitly_wait(2)
         driver.get(m_url)
-
         soup = bs4.BeautifulSoup(driver.page_source, "html.parser")
         #more = soup.find('a', {'class', 'lk_more _toggleMore(synopsis) NPI=a:more'})
 
@@ -107,7 +83,7 @@ while True:
         print(m_total)
 
         if "더보기" in driver.find_element_by_xpath('//*[@id="content"]/div[2]/div').text:
-            driver.find_element_by_css_selector("span.al_r").click()
+            driver.find_element_by_xpath('//*[@id="content"]/div[2]/div[1]/span/a').click()
             intro = driver.find_element_by_xpath('//*[@id="content"]/div[2]/div[2]')
             m_intro = intro.text.replace("접기", "")
         else:
@@ -126,20 +102,17 @@ while True:
         title_list[total].append(publisher)
         title_list[total].append(age)
         title_list[total].append(m_total)
-        title_list[total].append(m_url)
+        title_list[total].append("https://m.series.naver.com/"+n_url)
 
 
         total = total + 1
+        driver.close()
 
-
-
-
-    n =10
+    n = n+1
 
 data = pd.DataFrame(title_list, columns = ['title', 'author', 'genre', 'img_scr', 'pub_date', 'complete', 'intro', 'publisher', 'age', 'total', 'series'])
 data.to_csv('naver_serieson.csv', encoding='utf-8-sig', index=False)
 
-driver.close()
 
 print("저장 완료.\n")
 
