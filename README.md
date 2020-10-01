@@ -13,14 +13,11 @@
 플랫폼
 Kakaopage, Munpia, Joara, Naver_Series, Ridibooks
 
-SNS
-Instagram, Twitter
+SNS : Instagram, Twitter
 
-Community
-Dcinside, Instiz
+Community : Dcinside, Instiz
 
-Blog
-Daum, Naver,Tistory
+Blog : Daum, Naver,Tistory
 
 ---------------------------------------------------------------------
 각 사이트에 대한 크롤링 정보는 다음과 같다.
@@ -29,11 +26,11 @@ Platform :
 제목, 장르, 저자, 완결여부, 이미지(표지), 연령제한, 연재화수, 출간일, 출판사, 작품소개, 플랫폼별 링크
 (Ridibooks, Joara, Naver_Series는 platform에서 제공하는 댓글 크롤링 추가)
 
-SNS : 내용, 작성 날짜
+SNS : 작성 내용, 작성 날짜
 
 Community : 제목, 작성 날짜, 작성내용, 댓글
 
-Blog : 제목, 날짜, 저자(블로그 주인명), 
+Blog : 제목, 날짜, 저자(블로그 주인명), 작성내용
 
 
 ---------------------------------------------------------------------
@@ -58,7 +55,9 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
 각 크롤러 및 분석 도구에 필요한 모듈과 Input과 Output 그리고 활용 경과는 다음과 같다.
 ---------------------------------------------------------------------
 1. Crawler
+
   가. Flatform
+  
     1) Ridibooks
       
       
@@ -75,6 +74,7 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
       
       
   나. SNS(Crawler)
+  
     1) Instagram
       
       
@@ -82,6 +82,7 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
       
       
   다. Community(Crawler)
+  
     1) Dcinside
       
       
@@ -89,6 +90,7 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
       
       
   라. Blog(Crawler)
+  
     1) Daum
       
       
@@ -99,6 +101,7 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
       
       
 2. Analysis Tool
+
   가. TextRank
     
     
@@ -111,11 +114,16 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
 ---------------------------------------------------------------------
 각 크롤러 및 분석 도구의 성능 향상 혹은 기능 향상을 위해서는 다음과 같은 내용이 가능하다.
 ---------------------------------------------------------------------
+
 1. Crawler
+
   가. Kakaopage같은 경우, PC에서 댓글을 확인할 수 있는 기능이 신설되어 Sentimental Analysis에 활용이 가능하다.
   
 2. Analysis Tool
+
   가. TextRank 외에 최근에 나온 Upgrade version의 TextRankR 모듈 등을 활용한다면, 좀 더 좋은 결과를 도출할 수 있을 것이다.
+  
   나. Keras가 아닌 Kobert와 같이 '한국어'에 특화된 분석 module을 활용한다면, 분석의 정확도를 상승시킬 수 있다.
+  
   다. Aspect Mining에서, '가. 항목'에서 언급한 Lexarankr등의 모듈을 활용한다면,
       각 Blog의 결과를 종합하여 핵심적인 문장을 추출해낼 수 있는데, 그것 또한 좋은 Data일 것이다.
