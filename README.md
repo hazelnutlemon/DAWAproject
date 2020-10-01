@@ -89,15 +89,15 @@ Crawler
     (2) Instiz
       
       
-  4) Blog(Crawler)
+  4. Blog(Crawler)
   
-    (1) Daum
+    1) Daum
       
       
-    (2) Tistory
+    2) Tistory
       
       
-    (3) Naver
+    3) Naver
       
 
 
