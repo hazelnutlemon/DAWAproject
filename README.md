@@ -56,37 +56,37 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
 ---------------------------------------------------------------------
 Crawler
 ---------------------------------------------------------------------
-  1) Flatform
+  1. Flatform
   
-    (1) Ridibooks
+    1) Ridibooks
       
       
-    (2) Kakaopage
+    2) Kakaopage
       
       
-    (3) Naver_Series
+    3) Naver_Series
       
       
-    (4) Munpia
+    4) Munpia
       
       
-    (5) Joara
+    5) Joara
       
       
-  2) SNS(Crawler)
+  2. SNS(Crawler)
   
-    (1) Instagram
+    1) Instagram
       
       
-    (2)Twitter
+    2)Twitter
       
       
-  3) Community(Crawler)
+  3. Community(Crawler)
   
-    (1) Dcinside
+    1) Dcinside
       
       
-    (2) Instiz
+    2) Instiz
       
       
   4. Blog(Crawler)
