@@ -53,3 +53,69 @@ Blog 같은 경우에는, SNS, 커뮤니티, 플랫폼의 댓글보다 훨씬 �
 글의 저자 스스로 해당 작품속의 주인공, 스토리, 분위기 등의 종합적인 판단을 내리고 있기 때문에
 이를 종합하여 작품 속 주인공, 스토리, 분위기 등과 연관성이 높은 형용사를 추출하여
 작품을 판단할 수 있는 지표를 생성하고자 한다.
+
+---------------------------------------------------------------------
+각 크롤러 및 분석 도구에 필요한 모듈과 Input과 Output 그리고 활용 경과는 다음과 같다.
+---------------------------------------------------------------------
+1. Crawler
+  가. Flatform
+    1) Ridibooks
+      
+      
+    2) Kakaopage
+      
+      
+    3) Naver_Series
+      
+      
+    4) Munpia
+      
+      
+    5) Joara
+      
+      
+  나. SNS(Crawler)
+    1) Instagram
+      
+      
+    2)Twitter
+      
+      
+  다. Community(Crawler)
+    1) Dcinside
+      
+      
+    2) Instiz
+      
+      
+  라. Blog(Crawler)
+    1) Daum
+      
+      
+    2) Tistory
+      
+      
+    3) Naver
+      
+      
+2. Analysis Tool
+  가. TextRank
+    
+    
+  나. Sentimental Analysis
+    
+    
+  다. Aspect Mining
+    
+    
+---------------------------------------------------------------------
+각 크롤러 및 분석 도구의 성능 향상 혹은 기능 향상을 위해서는 다음과 같은 내용이 가능하다.
+---------------------------------------------------------------------
+1. Crawler
+  가. Kakaopage같은 경우, PC에서 댓글을 확인할 수 있는 기능이 신설되어 Sentimental Analysis에 활용이 가능하다.
+  
+2. Analysis Tool
+  가. TextRank 외에 최근에 나온 Upgrade version의 TextRankR 모듈 등을 활용한다면, 좀 더 좋은 결과를 도출할 수 있을 것이다.
+  나. Keras가 아닌 Kobert와 같이 '한국어'에 특화된 분석 module을 활용한다면, 분석의 정확도를 상승시킬 수 있다.
+  다. Aspect Mining에서, '가. 항목'에서 언급한 Lexarankr등의 모듈을 활용한다면,
+      각 Blog의 결과를 종합하여 핵심적인 문장을 추출해낼 수 있는데, 그것 또한 좋은 Data일 것이다.
