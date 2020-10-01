@@ -323,7 +323,9 @@ Analysis Tool
   
   3) Aspect Mining에서, '1) 항목'에서 언급한 Lexarankr등의 모듈을 활용한다면,
       각 Blog의 결과를 종합하여 핵심적인 문장을 추출해낼 수 있는데, 그것 또한 좋은 Data일 것이다.
-      
+
+
+
 # ER-Diagram
 (img 첨부예정)
 # Web Structure
