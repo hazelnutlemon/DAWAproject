@@ -10,8 +10,13 @@
 ---------------------------------------------------------------------
 작품에 대한 정보와 분석에 필요한 Data를 추출하기 위해 선택한 사이트는 다음과 같다.
 ---------------------------------------------------------------------
-플랫폼
-Kakaopage, Munpia, Joara, Naver_Series, Ridibooks
+#Flatform
+
+Kakaopage
+Munpia
+Joara
+Naver_Series
+Ridibooks
 
 SNS : Instagram, Twitter
 
