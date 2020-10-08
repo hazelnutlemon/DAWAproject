@@ -4,7 +4,7 @@ import requests
 from selenium import webdriver
 from urllib import parse
 
-def hasxpath(xapth):
+def hasxpath(xpath):
     try:
         driver.find_element_by_xpath(xpath)
         return True
@@ -65,21 +65,25 @@ while True:
 
             date = soup.head.find("meta", {"name": "description"}).get('content')
             date = date[0:13]
-            count = soup.find('a', {'class', 'cmt'})
-            con2 = soup.find('div', {'class', 'memo_content'})
-            for tag in con2.find_all(['span']):
-                tag.replace_with('')
+            if hasxpath('/html/body/div[9]/table/tbody/tr[4]/td') == True:
+                con2 = driver.find_element_by_xpath('/html/body/div[9]/table/tbody/tr[4]/td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[4] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[4] / td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[3] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[3] / td / div')
+            else:
+                con2 = driver.find_element_by_xpath('/ html / body / div[9] / table / tbody / tr[3] / td')
             print(title, date)
-            print(count.text)
-            print(con2)
+            print(con2.text.replace('익인', ''))
 
             try:
-                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]/tbody/tr[1]/td[2]/div[2]').text.replace(
+                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]').text.replace(
                     '•••답글', '')
                 print(temp)
             except:
                 pass
 
+            driver.get(url)
 
 
         elif test2 in baurl:
@@ -98,20 +102,26 @@ while True:
 
             date = soup.head.find("meta", {"name": "description"}).get('content')
             date = date[0:13]
-            count = soup.find('a', {'class', 'cmt'})
-            con2 = soup.find('div', {'class', 'memo_content'})
-            for tag in con2.find_all(['span']):
-                tag.replace_with('')
+            if hasxpath('/html/body/div[9]/table/tbody/tr[4]/td') == True:
+                con2 = driver.find_element_by_xpath('/html/body/div[9]/table/tbody/tr[4]/td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[4] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[4] / td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[3] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[3] / td / div')
+            else:
+                con2 = driver.find_element_by_xpath('/ html / body / div[9] / table / tbody / tr[3] / td')
             print(title, date)
-            print(count.text)
-            print(con2)
+            print(con2.text.replace('익인', ''))
+
 
             try:
-                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]/tbody/tr[1]/td[2]/div[2]').text.replace(
+                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]').text.replace(
                     '•••답글', '')
                 print(temp)
             except:
                 pass
+
+            driver.get(url)
 
 
 
@@ -131,20 +141,26 @@ while True:
 
             date = soup.head.find("meta", {"name": "description"}).get('content')
             date = date[0:13]
-            count = soup.find('a', {'class', 'cmt'})
-            con2 = soup.find('div', {'class', 'memo_content'})
-            for tag in con2.find_all(['span']):
-                tag.replace_with('')
+            if hasxpath('/html/body/div[9]/table/tbody/tr[4]/td') == True:
+                con2 = driver.find_element_by_xpath('/html/body/div[9]/table/tbody/tr[4]/td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[4] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[4] / td')
+            elif hasxpath('/ html / body / div[10] / table / tbody / tr[3] / td') == True:
+                con2 = driver.find_element_by_xpath('/ html / body / div[10] / table / tbody / tr[3] / td / div')
+            else:
+                con2 = driver.find_element_by_xpath('/ html / body / div[9] / table / tbody / tr[3] / td')
             print(title, date)
-            print(count.text)
-            print(con2)
+            print(con2.text.replace('익인', ''))
+
 
             try:
-                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]/tbody/tr[1]/td[2]/div[2]').text.replace(
+                temp = driver.find_element_by_xpath('//*[@id="ajax_table"]').text.replace(
                     '•••답글', '')
                 print(temp)
             except:
                 pass
+
+            driver.get(url)
 
     if(Flag==False):
         print("프로그램을 종료합니다")
