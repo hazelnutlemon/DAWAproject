@@ -575,7 +575,9 @@ Analysis Tool
             pandas                1.0.1   ~
             numpy                 1.19.1  ~
             re
-
+            
+            * If you do not wish to proceed with the initialization process, 'test_stage_1', 'train_stage_1' and 'best_model.h5' should be located in the folder.
+            
           Input Argument
           ---------------------------------------------------------------------
             Short string ( Not many Enter )
@@ -598,7 +600,9 @@ Analysis Tool
             konlpy                    0.5.2  ~
             gensim                    3.8.3  ~
             csv
-          
+            
+            * If you do not wish to proceed with the initialization process, 'NaverMovie.model' and 'NaverModel.nlp' should be located in the folder.
+            
           Input Argument
           ---------------------------------------------------------------------
             title(novel's name)
