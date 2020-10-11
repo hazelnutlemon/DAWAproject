@@ -1,5 +1,4 @@
-# 리디북스, 조아라, 트위터, 인스타그램 코드 제작자 및 8개 플랫폼 모듈화를 위한 수정과 모듈화 : 한승주 2015722084
-# 디씨인사이드, 인스티즈, 네이버 웹소설, 시리즈온 댓글 코드 제작자 : 조예슬
+# 리디북스, 조아라, 트위터, 인스타그램 코드 제작자 및 모듈화 : 한승주 2015722084
 
 import urllib.request
 from selenium import webdriver
@@ -36,13 +35,22 @@ def ridi_login(driver):
 
 # 리디북스 댓글 수집
 def ridi_comments(driver, url):
-    # 댓글 크롤링
-    driver.get(url)
-    time.sleep(1)
+    review_data = []
+    error_check = 0
 
-    # 전체 댓글 버튼 클릭
-    driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[1]/li[2]/a').click()
-    time.sleep(0.5)
+    driver.get(url)
+    # 서비스 종료로 인한 오류 발생 시, DB 업데이트
+    try:
+        # 전체 댓글 버튼 클릭
+        driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[1]/li[2]/a').click()
+        time.sleep(0.5)
+        # 공감순 버튼 클릭
+        driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[2]/li[2]/a').click()
+        time.sleep(0.5)
+    except:
+        print("[ERROR] ", url, "는 연재 서비스 중단 작품입니다. DB 업데이트합니다.")
+        error_check = 1
+        return review_data, error_check
 
     # 더보기 버튼 클릭
     while True:
@@ -61,12 +69,13 @@ def ridi_comments(driver, url):
 
     reviews=soup.select("#review_list_section > div.review_list_wrapper.js_review_list_wrapper.active > ul > li")
 
-    review_data = []
-
     for review in reviews:
         date = review.find('li',class_='review_date').text
         date=date.replace(" ","")
         date=date.replace(".","-")[0:10]
+        # 작성 날짜 2020년이 아닌 것은 수집 X
+        if(date<"2020-01-01"):
+            continue
         #print(date)
 
         if (review.find('span',class_='hidden')==None):
@@ -79,15 +88,24 @@ def ridi_comments(driver, url):
         total += 1
 
     print("총 댓글 수: ", total)
-    return review_data
+    return review_data, error_check
 
     # 총 댓글 수 total | review_data [type: list]
 
 # 조아라 댓글
 def joara_comments(driver, url):
+    review_data = []
+    error_check = 0
+    
     driver.get(url+"&book_dtype=comment_premium")
     time.sleep(1)
-
+    try:
+        driver.current_url
+    except:
+        print("[ERROR] ", url, "는 연재 서비스 중단 작품입니다. DB 업데이트합니다.")
+        error_check = 1
+        return review_data, error_check  
+    
     # 더보기 버튼 클릭하기
     while True:
         try:
@@ -96,7 +114,7 @@ def joara_comments(driver, url):
             time.sleep(1)
 
         except:
-            break
+            break      
 
     # 댓글 가져오기
     html = driver.page_source
@@ -105,10 +123,12 @@ def joara_comments(driver, url):
 
     comments = comment_list[0].find_all(name="dd")
 
-    review_data = []
     total = 0
     for comment in comments:
         date = comment.find('span',class_='date').text[0:10]
+        # 2020년 전 댓글 수집 X
+        if(date<"2020-01-01"):
+            continue
         #print(date)
 
         review=comment.find('p',class_='comment').text
@@ -117,7 +137,7 @@ def joara_comments(driver, url):
         total += 1
 
     print("총 댓글 수: ", total)
-    return review_data
+    return review_data, error_check 
 
     # 총 댓글 수 total | review_data [type: list]
     
@@ -136,16 +156,19 @@ def naver_login(driver):
     
 # 네이버 웹소설 댓글
 def naver_comments(driver, url):
+    reviews = []
+    error_happen = 0
     driver.get(url)
-    time.sleep(0.5)
-
-    close_w = driver.find_element_by_css_selector('#eventLayer > div > div > a.lk_close')
-    close_w.click()
-    time.sleep(0.5)
-
-    comm = driver.find_element_by_css_selector("#ct > div.end_section2 > div:nth-child(2) > a")
-    comm.click()
-    time.sleep(0.5)
+    # 삭제된 링크 접속으로 인한 오류 해결 구문 추가
+    try:
+        time.sleep(0.5)
+        comm = driver.find_element_by_css_selector("#ct > div.end_section2 > div:nth-child(2) > a")
+        comm.click()
+        time.sleep(0.5)
+    except:
+        print("[ERROR] ",url, "은 더이상 서비스되지 않습니다. DB 업데이트합니다.")
+        error_happen = 1
+        return reviews, error_happen
 
     # 더보기 마지막까지 클릭
     while True:
@@ -157,19 +180,27 @@ def naver_comments(driver, url):
 
     time.sleep(1)
 
-    reviews = []
-    total=len(driver.find_elements_by_class_name('u_cbox_area'))
-    for content in driver.find_elements_by_class_name('u_cbox_area'):
-        review = content.find_element_by_class_name('u_cbox_contents').text
-        date = content.find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:10]
-        reviews.append([date, review])
+    total=len(driver.find_elements_by_class_name('u_cbox_comment_box'))
+    for content in driver.find_elements_by_class_name('u_cbox_comment_box'):
+        try:
+            date = content.find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:10]
+            # 리뷰 분석은 2020년 내 댓글만 진행
+            if(date<"2020-01-01"):
+                continue
+            review = content.find_element_by_class_name('u_cbox_contents').text
+         
+            reviews.append([date, review])
+        except:
+            continue
         #print(date, review)
     # total : 총 댓글 수 | reviews[type: list]
     
-    return reviews
+    return reviews, error_happen
 
 # 네이버 시리즈온 댓글
 def serieson_comments(driver, url):
+    serieson_reviews = []
+    error_check = 0
     # 서비스 중단 작품 에러 발생 대비
     try:
         driver.get(url)
@@ -179,13 +210,16 @@ def serieson_comments(driver, url):
         comm = driver.find_element_by_css_selector("#ct > div.nstore_open > div.nstore_rental > div.content_activity > ul > li:nth-child(2) > a")
         comm.click()
         time.sleep(1)
+    except:
+        print("[ERROR] ",url, "은 더이상 서비스되지 않습니다. DB 업데이트합니다.")
+        error_check = 1
+        return serieson_reviews, error_check
 
         maximum = 0
         page = 1
 
         time.sleep(3)
 
-        serieson_reviews = []
         while True:
             try:
                 driver.get(driver.current_url)
@@ -210,9 +244,8 @@ def serieson_comments(driver, url):
                 time.sleep(0.5)
             except:
                 break
-    except:
-        serieson_reviews = []
-    return serieson_reviews
+    
+    return serieson_reviews, error_check
 
 # 트위터
 # 특수 문자 제거 : 숫자, 영어, 한글을 제외 모든 글자 지우기
@@ -345,26 +378,29 @@ def ig_scraping(driver, search_key):
     csvtext = []
 
     for i in range(0, post_num):
-        csvtext.append([])
         post_url = 'https://www.instagram.com'+ post_list[i]
         driver.get(post_url)
         html = driver.page_source
         soup = BeautifulSoup(html, 'lxml')
+        
+        # 작성날짜
+        try:
+            date = soup.select('time._1o9PC.Nzb55')[0]['datetime'][:10]
+        except:
+            date = ''
+        if(date<"2020-01-01"):
+            continue
+        #csvtext.append([])
+        #csvtext[i].append(date)
 
         # 내용
         try:
             content = soup.select('div.C4VMK > span')[0].text
         except:
             content = ''
-        csvtext[i].append(content)
+        #csvtext[i].append(content)
+        csvtext.append([date, content])
         #print(content)
-
-        # 작성날짜
-        try:
-            date = soup.select('time._1o9PC.Nzb55')[0]['datetime'][:10]
-        except:
-            date = ''
-        csvtext[i].append(date)
         #print(date)
 
     print(post_num, "개의 데이터 받아오는 중.\n")
@@ -426,9 +462,13 @@ def dc_scraping(driver, search):
                     # 게시글 삭제로 인한 에러가 나올 경우 패스.
                     try:
                         # title : 제목, date : 작성 날짜, content : 작성 내용 + 댓글.
-                        title = soup.head.find("meta", {"name": "title"}).get('content').split("-")[0]
                         date = soup.find('span', class_='gall_date')
                         date = date.get("title")[0:10]
+                        # 수집 기간 2020년 이후로 설정, 필요 없을 시 아래 if~continue구문 삭제
+                        if(date<"2020-01-01"):
+                            continue
+                        title = soup.head.find("meta", {"name": "title"}).get('content').split("-")[0]
+                        
                         content= driver.find_element_by_xpath('// *[ @ id = "container"] / section / article[2] / div[1] / div / div[1] / div[1]').text
                         #print("title " + title + " | date "+ date)
                         # print("content " + content)
