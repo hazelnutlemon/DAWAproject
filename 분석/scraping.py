@@ -1,20 +1,20 @@
 # 리디북스, 조아라, 트위터, 인스타그램 코드 제작자 및 모듈화 : 한승주 2015722084
 
 import urllib.request
-from selenium import webdriver
-from bs4 import BeautifulSoup
-import requests
+from urllib.parse import urlparse
 from urllib import parse
-import time
+import requests
 import bs4
+from bs4 import BeautifulSoup
+from selenium import webdriver
+import os
 import twint
 import re
-import nest_asyncio
-from urllib.parse import urlparse
-import os
-import urllib.request
-import warnings # 경고메세지 제거
 from datetime import datetime, timedelta
+import datetime
+import time
+import nest_asyncio
+import warnings # 경고메세지 제거
 
 # 리디북스 로그인
 def ridi_login(driver):
@@ -34,31 +34,28 @@ def ridi_login(driver):
     time.sleep(1)
 
 # 리디북스 댓글 수집
-def ridi_comments(driver, url):
+def ridi_comments(select_date,driver, url):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
     review_data = []
-    error_check = 0
 
     driver.get(url)
-    # 서비스 종료로 인한 오류 발생 시, DB 업데이트
+    # 서비스 종료로 인한 오류 발생 시
     try:
         # 전체 댓글 버튼 클릭
         driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[1]/li[2]/a').click()
-        time.sleep(0.5)
+        time.sleep(1)
         # 공감순 버튼 클릭
         driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[2]/li[2]/a').click()
-        time.sleep(0.5)
+        time.sleep(1)
     except:
-        print("[ERROR] ", url, "는 연재 서비스 중단 작품입니다. DB 업데이트합니다.")
-        error_check = 1
-        return review_data, error_check
-
+        return review_data
+    
     # 더보기 버튼 클릭
     while True:
         try:
             more_btn = driver.find_element_by_css_selector('#review_list_section > div.review_list_wrapper.js_review_list_wrapper.active > div.more_review_button_wrapper.js_more_review_button_wrapper > button')
             more_btn.click()
             time.sleep(0.5)
-
         except:
             break
 
@@ -73,8 +70,14 @@ def ridi_comments(driver, url):
         date = review.find('li',class_='review_date').text
         date=date.replace(" ","")
         date=date.replace(".","-")[0:10]
-        # 작성 날짜 2020년이 아닌 것은 수집 X
-        if(date<"2020-01-01"):
+        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        if(date_obj.year<2020):
+            #print("2020년 댓글 아님.")
+            continue
+        if(date_obj.day not in select_date):
+            #print("표본 x")
+            continue
+        if(collect_check[date_obj.month-1]>=100):
             continue
         #print(date)
 
@@ -83,32 +86,36 @@ def ridi_comments(driver, url):
         else:
             comment=review.find('span',class_='hidden').text
         #print(comment)
-
+        collect_check[date_obj.month-1]+=1
         review_data.append([date, comment])
+        if(collect_check.count(100)==10):
+            break
         total += 1
 
     print("총 댓글 수: ", total)
-    return review_data, error_check
+    print(collect_check)
+    return review_data
 
     # 총 댓글 수 total | review_data [type: list]
 
 # 조아라 댓글
-def joara_comments(driver, url):
+def joara_comments(select_date, driver, url):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
     review_data = []
-    error_check = 0
     
     driver.get(url+"&book_dtype=comment_premium")
     time.sleep(1)
     try:
         driver.current_url
     except:
-        print("[ERROR] ", url, "는 연재 서비스 중단 작품입니다. DB 업데이트합니다.")
-        error_check = 1
-        return review_data, error_check  
+        return review_data
     
     # 더보기 버튼 클릭하기
     while True:
         try:
+            html = driver.page_source
+            if(BeautifulSoup(html, 'html.parser').select('#comment_list')[0].find_all(name="dd")[-1].find('span',class_='date').text[0:4]<"2020"):
+                break
             more_btn = driver.find_element_by_css_selector('#commentMoreBtn > a')
             more_btn.click()
             time.sleep(1)
@@ -126,18 +133,28 @@ def joara_comments(driver, url):
     total = 0
     for comment in comments:
         date = comment.find('span',class_='date').text[0:10]
-        # 2020년 전 댓글 수집 X
-        if(date<"2020-01-01"):
+        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        if(date_obj.year<2020):
+            #print("2020년 댓글 아님.")
+            continue
+        if(date_obj.day not in select_date):
+            #print("표본 x")
+            continue
+        if(collect_check[date_obj.month-1]>=100):
             continue
         #print(date)
 
         review=comment.find('p',class_='comment').text
         #print(review)
+        collect_check[date_obj.month-1]+=1
         review_data.append([date, review])
+        if(collect_check.count(100)==10):
+            break
         total += 1
 
     print("총 댓글 수: ", total)
-    return review_data, error_check 
+    print(collect_check)
+    return review_data
 
     # 총 댓글 수 total | review_data [type: list]
     
@@ -155,97 +172,102 @@ def naver_login(driver):
     time.sleep(0.5) ## 0.5초
     
 # 네이버 웹소설 댓글
-def naver_comments(driver, url):
+def naver_comments(select_date, driver, url):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
     reviews = []
-    error_happen = 0
+    
     driver.get(url)
+    time.sleep(0.5)
     # 삭제된 링크 접속으로 인한 오류 해결 구문 추가
     try:
-        time.sleep(0.5)
         comm = driver.find_element_by_css_selector("#ct > div.end_section2 > div:nth-child(2) > a")
         comm.click()
-        time.sleep(0.5)
+        time.sleep(1)
     except:
-        print("[ERROR] ",url, "은 더이상 서비스되지 않습니다. DB 업데이트합니다.")
-        error_happen = 1
-        return reviews, error_happen
+        return reviews
 
     # 더보기 마지막까지 클릭
     while True:
         try:
-            driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a/span').click()
+            if(driver.find_elements_by_class_name('u_cbox_comment_box')[-1].find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:4]<"2020"):
+                break
+            driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a').click()
             time.sleep(0.5)
         except:
+            if(driver.find_elements_by_class_name('u_cbox_comment_box')[-1].find_element_by_class_name('u_cbox_delete_contents')):
+                driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a').click()
+                time.sleep(0.5)
+                continue
             break
 
-    time.sleep(1)
-
-    total=len(driver.find_elements_by_class_name('u_cbox_comment_box'))
     for content in driver.find_elements_by_class_name('u_cbox_comment_box'):
         try:
             date = content.find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:10]
-            # 리뷰 분석은 2020년 내 댓글만 진행
-            if(date<"2020-01-01"):
+            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+            #print(date)
+            if(date_obj.year<2020):
+                #print("2020년 댓글 아님.")
+                continue
+            if(date_obj.day not in select_date):
+                #print("표본 x")
+                continue
+            if(collect_check[date_obj.month-1]>=100):
                 continue
             review = content.find_element_by_class_name('u_cbox_contents').text
-         
+            collect_check[date_obj.month-1]+=1
             reviews.append([date, review])
+            if(collect_check.count(100)==10):
+                break
         except:
             continue
         #print(date, review)
     # total : 총 댓글 수 | reviews[type: list]
-    
-    return reviews, error_happen
+    print(collect_check)
+    return reviews
 
 # 네이버 시리즈온 댓글
-def serieson_comments(driver, url):
+def serieson_comments(select_date, driver, url):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
     serieson_reviews = []
-    error_check = 0
+
     # 서비스 중단 작품 에러 발생 대비
     try:
         driver.get(url)
-        soup2 = bs4.BeautifulSoup(driver.page_source, "html.parser")
-
-        time.sleep(1)
-        comm = driver.find_element_by_css_selector("#ct > div.nstore_open > div.nstore_rental > div.content_activity > ul > li:nth-child(2) > a")
-        comm.click()
-        time.sleep(1)
+        time.sleep(0.5)
+        
+        driver.find_element_by_xpath('//*[@id="ct"]/div[1]/div[1]/div[2]/ul/li[2]/a').click()
+        time.sleep(2)
     except:
-        print("[ERROR] ",url, "은 더이상 서비스되지 않습니다. DB 업데이트합니다.")
-        error_check = 1
-        return serieson_reviews, error_check
+        return serieson_reviews
 
-        maximum = 0
-        page = 1
 
-        time.sleep(3)
-
-        while True:
-            try:
-                driver.get(driver.current_url)
-                soup3 = bs4.BeautifulSoup(driver.page_source, "html.parser")
-
-                temp = soup3.find('div', {'class', 'u_comment_box u_comment_v2'})
-                con = temp.findAll('li')
-
-                for li in con:
-                    date = li.find('div', {'class', 'u_comment_info'})
-                    for tag in date.find_all(['em','span','a']):
-                        tag.replace_with('')
-                    date_p = date.text[1:11]
-                    #print(date_p)
-                    comment = li.find('p', {'class', 'u_comment_text u_comment_txt1'})
-                    com_p = comment.text
-                    #print(com_p)
-                    serieson_reviews.append([date_p, com_p])
-
-                next = driver.find_element_by_css_selector('#comment_module > div.__comment_page_area > div > a.u_pg2_btn.u_pg2_next.__comment_page_next')
-                next.click()
-                time.sleep(0.5)
-            except:
+    while True:
+        try:        
+            for li in driver.find_elements_by_class_name('u_comment_depth'):
+                date = li.find_element_by_class_name('u_comment_info').text[-21:-11]
+                date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+                if(date_obj.year<2020):
+                    print("2020년 댓글 아님.")
+                    continue
+                if(date_obj.day not in select_date):
+                    #print("표본 x")
+                    continue
+                if(collect_check[date_obj.month-1]>=100):
+                    continue
+                comment = li.find_element_by_class_name('u_comment_text').text
+                serieson_reviews.append([date, comment])
+                collect_check[date_obj.month-1]+=1
+            
+            if(date_obj.year<2020):
+                print("2020년 댓글 아님.")
                 break
-    
-    return serieson_reviews, error_check
+            driver.find_element_by_xpath('//*[@id="comment_module"]/div[5]/div/a[2]').click()
+            time.sleep(1)
+        except:
+            break
+            
+    print(collect_check)
+    return serieson_reviews
 
 # 트위터
 # 특수 문자 제거 : 숫자, 영어, 한글을 제외 모든 글자 지우기
@@ -264,8 +286,8 @@ def tweet_scraping(search):
     
     tweets = []
     
-    # 검색 시작 : 2019-01-01 / 끝 : 2020-09-30
-    since = "2019-01-01"
+    # 검색 시작 : 2020-01-01 / 끝 : 2020-09-30
+    since = "2020-01-01"
     until = "2020-09-30"
     
     # Twint를 이용한 트위터 검색 결과
@@ -326,7 +348,9 @@ def ig_login(driver):
     password_input.submit()
     time.sleep(3)
 
-def ig_scraping(driver, search_key):
+def ig_scraping(select_date, driver, search_key):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
+    
     # 작품 검색
     search_key=cleaned(search_key).replace(" ","")
     print(search_key+" 검색 시작\n")
@@ -386,10 +410,18 @@ def ig_scraping(driver, search_key):
         # 작성날짜
         try:
             date = soup.select('time._1o9PC.Nzb55')[0]['datetime'][:10]
+            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+            #print(date)
+            if(date_obj.year<2020):
+                #print("2020년 댓글 아님.")
+                continue
+            if(date_obj.day not in select_date):
+                #print("표본 x")
+                continue
+            if(collect_check[date_obj.month-1]>=100):
+                continue
         except:
             date = ''
-        if(date<"2020-01-01"):
-            continue
         #csvtext.append([])
         #csvtext[i].append(date)
 
@@ -399,12 +431,16 @@ def ig_scraping(driver, search_key):
         except:
             content = ''
         #csvtext[i].append(content)
+        collect_check[date_obj.month-1]+=1
         csvtext.append([date, content])
+        if(collect_check.count(100)==10):
+            break
+        
         #print(content)
         #print(date)
 
     print(post_num, "개의 데이터 받아오는 중.\n")
-    total=post_num
+    print(collect_check)
     print("저장 완료.\n")
     
     return csvtext
@@ -415,7 +451,9 @@ def cleaned_dc(tmp):
     tmp = re.sub('[^A-Za-z0-9ㄱ-ㅣ가-힣]', '', tmp) # 특수문자로 인한 검색 실패 대비 영어, 한국어, 숫자를 제외한 모든 글자 삭제
     return tmp
 
-def dc_scraping(driver, search):
+def dc_scraping(select_date, driver, search):
+    collect_check = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # [1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월]
+    
     search = cleaned_dc(search)
     
     n = 1
@@ -464,8 +502,14 @@ def dc_scraping(driver, search):
                         # title : 제목, date : 작성 날짜, content : 작성 내용 + 댓글.
                         date = soup.find('span', class_='gall_date')
                         date = date.get("title")[0:10]
-                        # 수집 기간 2020년 이후로 설정, 필요 없을 시 아래 if~continue구문 삭제
-                        if(date<"2020-01-01"):
+                        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+                        if(date_obj.year<2020):
+                            #print("2020년 댓글 아님.")
+                            continue
+                        if(date_obj.day not in select_date):
+                            #print("표본 x")
+                            continue
+                        if(collect_check[date_obj.month-1]>=100):
                             continue
                         title = soup.head.find("meta", {"name": "title"}).get('content').split("-")[0]
                         
@@ -485,10 +529,14 @@ def dc_scraping(driver, search):
                                 reviews=reviews+review.text+" "
                             # print(reviews)
                         dcinside.append([date, title, content + " " + reviews])
+                        collect_check[date_obj.month-1]+=1
+                        if(collect_check.count(100)==10):
+                            break
                     except:
                         continue
             except:
                 continue
         n = n+1 # 검색 결과 다음페이지로 이동하기 위한 변수
-        
+    
+    print(collect_check)
     return dcinside
