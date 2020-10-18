@@ -1,3 +1,79 @@
 작품 정보 테이블
 작가 테이블
 분석 테이블
+
+제작 뷰
+[idtitleauthor] : idnovel/title/author
+
+디자인에서 사용한 SQL 
+-- 메인 페이지1
+select n.title, n.img_src, n.idnovel, m.term, m.num from novel n
+left outer join mentioned m
+on n.idnovel=m.novel;
+
+사용 SQL Query
+-- DB 목록 보여주기 : show databases;
+-- DB 사용  : use "DB 이름"; <ex. use webnoveldb;>
+-- 테이블 목록 보여주기 : show tables;
+
+-- 테이블 내 속성 사이즈 변경 : alter table "테이블명" modify "속성명" 타입(사이즈); <ex. alter table novel modify title varchar(70);>
+-- 테이블 이름 변경 : alter table "기존 이름" rename "변경 이름"; <ex. alter table aspect rename aspect_character;>
+-- 테이블 내 컬럼 삭제 : alter table "테이블명" drop column "삭제 컬럼명"; <ex. alter table aspect_character drop column keyword;>
+
+-- 테이블 복사로 테이블 생성 : create table "생성할 테이블명" like "복사할 테이블명"; <ex. create table aspect_mood like aspect_character;>
+-- 테이블 삭제 : drop table "삭제할 테이블명"; <ex. drop table category;>
+
+-- 테이블에 데이터 삽입 : insert into "테이블명" (속성1, 속성2, ...) values (속성1 값, 속성2 값, ...); <ex. insert into author (novel, name) values (102, "유오디아");>
+-- 행 업데이트 : update "테이블명" set "컬럼명" = '변경후' where 조건; <ex. update author set name = 'Aggie.R' where name = " Aggie.R";>
+-- 여러 행 한번에 업데이트 - replace 이용 : set "컬럼명" = replace("컬럼명", '변경전', '변경후')
+<ex. update novel set publisher = replace(publisher, '  ', '') where publisher like "출판사%";>
+-- 왼쪽부터 n개만 저장. : left("컬럼명", n) <ex. update novel set pub_Date = left(pub_date, 10);
+
+-- 외래키 설정, 제약조건은 선택, cascade는 외래키 삭제시 다른 테이블에 해당 외래키와 연결된 것도 모두 update 혹은 delete
+<ex. alter table aspect_mood add foreign key(novel) references novel(idnovel) on update cascade on delete cascade;>
+-- 외래키 수정 : 제약조건 추가 add constraint
+<ex. alter table aspect add constraint aspect_ibfk_1 foreign key(novel) references novel(idnovel) on delete cascade;>
+-- 외래키 설정된 테이블 내부 데이터 삭제 : 테이블 삭제시, 외래키 먼저 해제 후 테이블 삭제해야함.
+<ex. set foreign_key_checks = 0;
+truncate table novel;
+set foreign_key_checks = 1;>
+
+-- 데이터 보기 : select 속성들 from "뷰/테이블명"; 
+-- 여러가지 select 조건
+* order by "정렬 기준 컬럼" (desc/asc): 해당 컬럼 기준으로 정렬. desc는 내림차순, asc는 오름차순, 없으면 default로 asc. : select 속성들 from "뷰/테이블명" order by "정렬 기준 컬럼명";
+<ex. select * from idtitleauthor order by title;>
+* 조건에서 NULL 사용할 경우, is / is not 사용. : select 속성 from "테이블명" where "컬럼명" is/is not NULL;
+<ex. select * from novel where naverwebnovel is not NULL;>
+* like "%단어%" : 단어가 들어가 있는 경우, 앞 %만 있다면, 단어로 끝나는 경우, 뒤 %만 있다면, 단어로 시작하는 경우를 의미. 
+<ex. select * from idtitleauthor where title like "%남편%" order by title;>
+<ex. select * from novel where not age like '%연령가%';> -> not은 없다면
+* count와 group by, having을 이용한 중복 찾기. 컬럼명과 해당 컬럼명이 들어간 행의 개수를 t2라 할때 컬럼명으로 group을 만들고 t2의 개수가 1이 넘는 것을 찾는다.
+: select 중복 컬럼명, count(*) as t2 from novel group by 중복컬럼명 having t2 > 1; <ex. select serieson, count(*) as t2 from novel group by serieson having t2 > 1;>
+* 조건 이용한 검색시, where사용. : select 속성들 from "테이블명" where "컬럼명"="검색어"; <ex. select idnovel, title from novel where title='회귀의 전설';>
+* 뒤 컬럼내에 앞 컬럼의 요소가 있는지 혹은 컬럼내에 검색어가 있는지 검색 : 컬럼 in 컬럼 / 검색어 in 컬럼
+<ex. select * from novel where title in (select title from novel group by title having count(title) > 1) order by title;
+* 데이터의 일부를 변경하고 싶을 때 : replace(컬럼명, '변경 전', '변경 후') as 컬럼명
+<ex. select idnovel, title, replace(img_src, '?type=m260', '') as img_src from novel where img_src like "https://comicthumb%";>
+* 데이터 앞에 추가하기, update에서도 똑같은 방식으로 사용 : concat("추가할 문자열", "컬럼명")
+<ex. select concat("https:", img_src) FROM novel where img_src like "//img.ridicdn.net%";>
+
+-- 외부 조인(outer join) : select 속성들 left from 테이블1 outer join 테이블2 on 기준;
+* left outer join : 왼쪽에 있는 테이블의 모든 결과를 기준으로 오른쪽 테이블에 매칭. 매칭 데이터가 없다면 NULL.
+* right outer join : 오른쪽에 있는 테이블의 모든 결과를 기준으로 왼쪽 테이블에 매칭. 매칭 데이터가 없다면 NULL.
+<ex. select n.idnovel, n.title, c.genre from novel n left outer join category c on n.idnovel=c.idnovel;>
+
+-- count(속성) : 같은 속성을 가진 행의 개수 select count("속성1") from "테이블명"; <ex. select count(distinct title) from novel;>
+* distinct : 중복 포함 X
+
+-- 행 삭제하기 : delete from "컬럼명" where 조건; <ex. delete from author where novel =29207;>
+-- 비교 후 조건에 맞는 행 삭제하기 : delete 비교대상1 from 비교대상1, 비교대상2 where "비교 조건";
+<ex. delete n1 from novel n1, novel n2 where n1.idnovel > n2.idnovel AND n1.title = n2.title and n1.total=n2.total;>
+
+-- 테이블의 제약 조건(ex. 외래키) 확인하기 : select * from information_schema.table_constraints where constraint_schema = 'DB 이름';
+<ex. select * from information_schema.table_constraints where constraint_schema = 'webnoveldb';>
+
+-- 테이블 create문 확인 : show create table "테이블명"; <ex. show create table novel;>
+
+-- 뷰 생성 : create view "뷰 이름" as 저장할 테이블 및 select문;
+<ex. create view idtitleauthor as select n.idnovel, n.title, a.name from novel n left outer join author a on n.idnovel=a.novel;>
+-- 뷰 삭제 : drop view "뷰이름" <ex. drop view forinsert;>
