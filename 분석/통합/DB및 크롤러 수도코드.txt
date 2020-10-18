@@ -1,0 +1,30 @@
+import module 									# When you run the program, you need 10 minutes of initial start time
+
+def main():
+	title_list=DB Open 및 Load title #제목 가져오는 부분
+	content_list_daum, content_list_tistory ...etc = []					 #module화된 함수를 실행시켰을때 내용 list 저장할 용도
+	count_daum, list_tistory ... etc = 0 						#module화된 함수를 실행시켰을때 count list 저장할 용도
+	review_list_ridibooks ... etc = [] 						#module화된 함수를 실행시켰을때 count list 저장할 용도
+	for title in range(len(title_list)):						#DB에서 가져온 title_list 각각에 대하여....
+		list daum, count_ daum = Blog,Community,SNS Crawler(title)		#함수를 실행시키고 위의 list 및 count 필요하다면 review 까지 리턴 받아 저장한다.
+		
+		if title in ridibooks(can get review any...etc) : 				#ridibooks와 같이 댓글을 받을 수 있는 플랫폼은 크롤러를 실행시켜 그 결과를 저장
+			Execute review_list_ridibooks=ridibooks_review_crawler()
+		
+		merge list for make txt file						#저장한 list를 이용하여 content 부분만 merge하여 텍스트 파일을 만들어서 추후에 (1-2), (3)분석에서 활용
+	
+		Add all of count for (1-1) analysis
+		store 'sum of count' to DB						#return 받은 count를 모두 더해 DB에 저장
+
+		Execute Textrank(txt file 0name) for (1-2) Analysis			#merge된 txt파일을 이용하여 1-2 수행
+		store 5 text to DB							#수행 결과인 5개의 txt를 list에 return받고 이것을 DB에 저장
+		
+		iftitle in ridibooks(can get review any...etc) : 				#ridibooks 등의 조건이 있을때 아래의 함수를 실행시킨다. 그외에는 리뷰없으면 실행시킬 필요가 없으니까
+			for review in range(len(review_list_ridibooks)): # for (2) Analysis	#return 받은 review_list를 이용하여 predict를 반복적으로 실행할 것인데
+				Execute dateList=predict(review)			#만들어놓은 dateList에다가 그 결과를 저장하고
+			store predict to DB					#그 dateList를 DB에 저장
+	
+		Execute Aspect_Miner(txt_file name) for (3) Analysis			#merge된 txt파일을 이용하여 3 수행
+		store 5 text to DB							#수행 결과인 5개의 txt를 list에 return받고 이것을 DB에 저장
+
+	Program closed
