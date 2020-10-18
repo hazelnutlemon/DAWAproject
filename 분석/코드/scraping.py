@@ -189,15 +189,22 @@ def naver_comments(select_date, driver, url):
     # 더보기 마지막까지 클릭
     while True:
         try:
+            # 현재 마지막 댓글이 2020년 이전 댓글일 경우 아래 더보기 그만 누르기
             if(driver.find_elements_by_class_name('u_cbox_comment_box')[-1].find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:4]<"2020"):
                 break
             driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a').click()
             time.sleep(0.5)
+        # 마지막 댓글이 블라인드 댓글이거나 혹은 댓글이 0인 경우
         except:
-            if(driver.find_elements_by_class_name('u_cbox_comment_box')[-1].find_element_by_class_name('u_cbox_delete_contents')):
-                driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a').click()
-                time.sleep(0.5)
-                continue
+            try:
+                # 현재 마지막 댓글이 "신고로 인해 임시 블라인드 되었습니다."인 경우 더보기 누르기
+                if(driver.find_elements_by_class_name('u_cbox_comment_box')[-1].find_element_by_class_name('u_cbox_delete_contents')):
+                    driver.find_element_by_xpath('//*[@id="cbox_module"]/div/div[6]/a').click()
+                    time.sleep(0.5)
+                    continue
+            # 댓글이 0인 경우는 빈 리스트 리턴
+            except:
+                break
             break
 
     for content in driver.find_elements_by_class_name('u_cbox_comment_box'):
@@ -528,6 +535,8 @@ def dc_scraping(select_date, driver, search):
                             for review in com_2:
                                 reviews=reviews+review.text+" "
                             # print(reviews)
+                        if search not in content:
+                            continue
                         dcinside.append([date, title, content + " " + reviews])
                         collect_check[date_obj.month-1]+=1
                         if(collect_check.count(100)==10):
