@@ -3,7 +3,7 @@ def aspect_miner(work_name):
     import csv
     from konlpy.tag import Okt
     from gensim.models import word2vec
-
+    import re
     file_name='Crawling\\' + work_name +'.txt'
     #작품 리뷰 모음을 읽는다.
     f = open(file_name, 'r', encoding='utf-8')
@@ -40,52 +40,71 @@ def aspect_miner(work_name):
      #print(rl)
 
     #형태소들을 별도의 파일로 저장 합니다.
-    with open("NaverMovie.nlp",'w', encoding='utf-8') as fp:
+    with open("Analysis.nlp",'w', encoding='utf-8') as fp:
         fp.write("\n".join(result))
+    try:
+        #Word2Vec 모델 만들기
+        wData = word2vec.LineSentence("Analysis.nlp")
+        wModel =word2vec.Word2Vec(wData, size=200, window=10, hs=1, min_count=2, sg=1)
+        wModel.save("Analysis.model")
+        #print("Word2Vec Modeling finished")
 
-    #Word2Vec 모델 만들기
-    wData = word2vec.LineSentence("NaverMovie.nlp")
-    wModel =word2vec.Word2Vec(wData, size=200, window=10, hs=1, min_count=2, sg=1)
-    wModel.save("NaverMovie.model")
-    print("Word2Vec Modeling finished")
+        twitter = Okt()
 
-    twitter = Okt()
+        model = word2vec.Word2Vec.load("Analysis.model")
+        count = 0
+        model_list = []
+        try:
+            model_list = model.most_similar(positive=["주인공"], topn=300)
+            for i in range(len(model_list)):
+                temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
+                if (temp_list[0][1] == 'Adjective'):
+                    character_word_list.append(temp_list[0][0])
+                    count += 1
 
-    model = word2vec.Word2Vec.load("NaverMovie.model")
-    count = 0
-    model_list = []
-    model_list = model.most_similar(positive=["주인공"], topn=300)
-    for i in range(len(model_list)):
-        temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
-        if (temp_list[0][1] == 'Adjective'):
-            character_word_list.append(temp_list[0][0])
-            count += 1
+                if (count == 5):
+                    break
+        except:
+            for i in range(0,5):
+                character_word_list.append('NULL')
 
-        if (count == 5):
-            break;
-    
-    count = 0
-    model_list = []
-    model_list = model.most_similar(positive=["스토리"], topn=300)
-    for i in range(len(model_list)):
-        temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
-        if (temp_list[0][1] == 'Adjective'):
-            story_word_list.append(temp_list[0][0])
-            count += 1
+        count = 0
+        model_list = []
+        try:
+            model_list = model.most_similar(positive=["스토리"], topn=300)
+            for i in range(len(model_list)):
+                temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
+                if (temp_list[0][1] == 'Adjective'):
+                    story_word_list.append(temp_list[0][0])
+                    count += 1
 
-        if (count == 5):
-            break;
-          
-    count = 0        
-    model_list = []
-    model_list = model.most_similar(positive=["분위기"], topn=300)
-    for i in range(len(model_list)):
-        temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
-        if (temp_list[0][1] == 'Adjective'):
-            mood_word_list.append(temp_list[0][0])
-            count += 1
+                if (count == 5):
+                    break
+        except:
+            for i in range(0,5):
+                story_word_list.append('NULL')
 
-        if (count == 5):
-            break;
-            
+        count = 0        
+        model_list = []
+        try:
+            model_list = model.most_similar(positive=["분위기"], topn=300)
+            for i in range(len(model_list)):
+                temp_list = twitter.pos(model_list[i][0], norm=True, stem=True)
+                if (temp_list[0][1] == 'Adjective'):
+                    mood_word_list.append(temp_list[0][0])
+                    count += 1
+
+                if (count == 5):
+                    break
+        except:
+            for i in range(0,5):
+                mood_word_list.append('NULL')
+    except:
+            for i in range(0,5):
+                character_word_list.append('NULL')
+            for i in range(0,5):
+                story_word_list.append('NULL')        
+            for i in range(0,5):
+                mood_word_list.append('NULL')        
+                
     return character_word_list,story_word_list,mood_word_list

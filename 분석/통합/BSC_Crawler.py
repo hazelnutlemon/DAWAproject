@@ -46,9 +46,9 @@ def ridi_comments(select_date,driver, url):
         # 전체 댓글 버튼 클릭
         driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[1]/li[2]/a').click()
         time.sleep(1)
-        # 공감순 버튼 클릭
-        driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[2]/li[2]/a').click()
-        time.sleep(1)
+        ## 공감순 버튼 클릭
+        #driver.find_element_by_xpath('//*[@id="review_list_section"]/div[1]/ul[2]/li[2]/a').click()
+        #time.sleep(1)
     except:
         return review_data
     
@@ -67,7 +67,7 @@ def ridi_comments(select_date,driver, url):
     soup=BeautifulSoup(source, 'html.parser')
 
     reviews=soup.select("#review_list_section > div.review_list_wrapper.js_review_list_wrapper.active > ul > li")
-
+    count=0
     for review in reviews:
         date = review.find('li',class_='review_date').text
         date=date.replace(" ","")
@@ -92,10 +92,10 @@ def ridi_comments(select_date,driver, url):
         review_data.append([date, comment])
         if(collect_check.count(100)==10):
             break
-        total += 1
-
-    print("총 댓글 수: ", total)
-    print(collect_check)
+        count+=1
+        if(count>3000):
+            break
+            
     return review_data
 
     # 총 댓글 수 total | review_data [type: list]
@@ -132,13 +132,9 @@ def joara_comments(driver, url):
 
     comments = comment_list[0].find_all(name="dd")
 
-    total = 0
     for comment in comments:
         date = comment.find('span',class_='date').text[0:10]
         date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
-        if(len(review_data)>1000):
-            print("1000개 초과")
-            break
         if(date_obj.year<2020):
             #print("2020년 댓글 아님.")
             continue
@@ -155,10 +151,8 @@ def joara_comments(driver, url):
         review_data.append([date, review])
         #if(collect_check.count(100)==10):
         #    break
-        total += 1
+        
 
-    print("총 댓글 수: ", total)
-    print(collect_check)
     return review_data
 
     # 총 댓글 수 total | review_data [type: list]
@@ -190,7 +184,6 @@ def naver_comments(driver, url):
         time.sleep(1)
     except:
         return reviews
-
     # 더보기 마지막까지 클릭
     while True:
         try:
@@ -217,9 +210,6 @@ def naver_comments(driver, url):
             date = content.find_element_by_class_name('u_cbox_date').get_attribute('data-value')[:10]
             date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
             #print(date)
-            if(len(reviews)>1000):
-                print("1000개 초과")
-                break
             if(date_obj.year<2020):
                 #print("2020년 댓글 아님.")
                 continue
@@ -235,6 +225,7 @@ def naver_comments(driver, url):
             #    break
         except:
             continue
+    
         #print(date, review)
     # total : 총 댓글 수 | reviews[type: list]
     #print(collect_check)
@@ -255,14 +246,20 @@ def serieson_comments(select_date, driver, url):
     except:
         return serieson_reviews
 
-
+    count=0
+    flag=True
     while True:
         try:        
             for li in driver.find_elements_by_class_name('u_comment_depth'):
                 date = li.find_element_by_class_name('u_comment_info').text[-21:-11]
                 date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+                
+                count += 1
+                if(count>7000):
+                    flag=False
+                    break
                 if(date_obj.year<2020):
-                    print("2020년 댓글 아님.")
+                    #print("2020년 댓글 아님.")
                     continue
                 if(date_obj.day not in select_date):
                     #print("표본 x")
@@ -274,19 +271,17 @@ def serieson_comments(select_date, driver, url):
                 collect_check[date_obj.month-1]+=1
                 
                 
-            if(len(serieson_reviews)>7000):
-                print("7000개 초과")
+            if(flag==False):
                 break
-            
             if(date_obj.year<2020):
-                print("2020년 댓글 아님.")
+                #print("2020년 댓글 아님.")
                 break
             driver.find_element_by_xpath('//*[@id="comment_module"]/div[5]/div/a[2]').click()
             time.sleep(1)
         except:
             break
             
-    print(collect_check)
+    #print(collect_check)
     return serieson_reviews
 
 # 트위터
@@ -460,9 +455,9 @@ def ig_scraping(driver, search_key):
         #print(content)
         #print(date)
 
-    print(post_num, "개의 데이터 받아오는 중.\n")
-    print(collect_check)
-    print("저장 완료.\n")
+    #print(post_num, "개의 데이터 받아오는 중.\n")
+    #print(collect_check)
+    #print("저장 완료.\n")
     
     return csvtext
     # 총 수집 개수 : total | 수집 내용 csvtext [list 타입]
@@ -559,9 +554,9 @@ def dc_scraping(driver, search):
             except:
                 continue
         n = n+1# 검색 결과 다음페이지로 이동하기 위한 변수
-        if(n>10):
+        if(n>5):
             break
-    print(collect_check)
+    #print(collect_check)
     return dcinside
 
 
@@ -589,11 +584,11 @@ def tistory_crawling(search_name):
 
         count = html.find('span', {'class', 'txt_info'})
         if (count == None):
-            print("프로그램 종료합니다")
+            #print("프로그램 종료합니다")
             break
         page = count.text.split(" /")[0]
         if (pre_page == page):
-            print("프로그램 종료합니다")
+            #print("프로그램 종료합니다")
             break
         pre_page = page
         
@@ -616,24 +611,24 @@ def tistory_crawling(search_name):
             title=re.sub('[^ ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z0-9]', '', title)
             if search_name.replace(" ", "") not in title.replace(" ", ""):
                 continue
-            print("제목 : " + title)
+            #print("제목 : " + title)
 
             author = html.find('span', {'class', 'txt_by'}).text
-            print("작성자 : " + author)
+            #print("작성자 : " + author)
 
             date = html.find('time', {'class', 'txt_date'}).text
-            print("작성일시 : " + date)
+            #print("작성일시 : " + date)
 
             post_area = html.find('div', {'class', 'blogview_content'})
 
             texts = post_area.findAll('p')
             post = ''
-            print(
-                "\n----------------------------------------\n" + "게시글\n" + "----------------------------------------\n")
+            #print(
+            #    "\n----------------------------------------\n" + "게시글\n" + "----------------------------------------\n")
             for text in texts:
                 post = post + text.text
-            print(post)
-            print("\n----------------------------------------\n")
+            #print(post)
+            #print("\n----------------------------------------\n")
             info_list = [title, author, date, post]
 
             info_lists.append(info_list)
@@ -662,13 +657,13 @@ def naver_crawling(search_name):
         main = html.find('div', {'class', 'blog section _blogBase _prs_blg'})
         count = main.find('span')
         if (count == None):
-            print("프로그램 종료합니다")
+            #print("프로그램 종료합니다")
             break
         page = count.text.split(" /")[0].replace(" ", "")
         if page=='이블로그제외하고다시검색':
             break
         if (pre_page == page):
-            print("프로그램 종료합니다")
+            #print("프로그램 종료합니다")
             break
         pre_page = page
         n = n + 10
@@ -700,22 +695,22 @@ def naver_crawling(search_name):
                     title=re.sub('[^ ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z0-9]', '', title)
                     if search_name.replace(" ", "") not in title.replace(" ", ""):
                         continue
-                    print(title)
+                    #print(title)
 
                     info_area = post_area.find('div', {'class', 'author_area'})
                     author_area = info_area.find('div', {'class', 'se_author'})
                     author = author_area.find('a').find('strong').text
-                    print(author)
+                    #print(author)
 
                     date = info_area.find('p').text
-                    print(date)
+                    #print(date)
 
                     content_area = body.find('div', {'class', 'post_ct'})
                     contents = content_area.findAll('p')
                     for content in contents:
                         content = content.text
                         post = post + content
-                        print(content)
+                        #print(content)
 
                 else:
                     post_area = body.find('div', {'class', 'post_ct'})
@@ -727,41 +722,41 @@ def naver_crawling(search_name):
                         title=re.sub('[^ ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z0-9]', '', title)
                         if search_name.replace(" ", "") not in title.replace(" ", ""):
                             continue
-                        print(title)
+                        #print(title)
 
                         author_area = info_area.find('div', {'class', 'blog_authorArea'})
                         author = author_area.find('div', {'class', 'blog_author'}).find('a').find('strong').text
-                        print(author)
+                        #print(author)
                         date = author_area.find('p').text
-                        print(date)
+                        #print(date)
 
                         content_area = title_area.find('div', {'class', 'se-main-container'})
                         contents = content_area.findAll('p')
                         for content in contents:
                             content = content.text
                             post = post + content
-                            print(content)
+                            #print(content)
                     else:
                         title_area = post_area.findAll('div', {'class', 'se_component_wrap'})[0]
                         title = title_area.find('h3').text
                         if search_name.replace(" ", "") not in title.replace(" ", ""):
                             continue
-                        print(title)
+                        #print(title)
 
                         info_area = title_area.find('div', {'class', 'blog_authorArea'})
                         author_area = info_area.find('div', {'class', 'blog_author'})
                         author = author_area.find('a').text
-                        print(author)
+                        #print(author)
 
                         date = info_area.find('p').text
-                        print(date)
+                        #print(date)
 
                         content_area = post_area.findAll('div', {'class', 'se_component_wrap'})[1]
                         contents = content_area.findAll('p')
                         for content in contents:
                             content = content.text
                             post = post + content
-                            print(content)
+                         #   print(content)
             else:
                 body = html.find('div', {'class', 'postListBody'})
                 post_area = body.find('div', {'class', 'se-viewer se-theme-default'})
@@ -770,21 +765,21 @@ def naver_crawling(search_name):
                 title=re.sub('[^ ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z0-9]', '', title)
                 if search_name.replace(" ", "") not in title.replace(" ", ""):
                     continue
-                print(title)
+                #print(title)
 
                 author_area = title_area.find('div', {'class', 'blog2_container'})
                 author = author_area.find('span').find('a').text
-                print(author)
+                #print(author)
 
                 date = author_area.find('span', {'class', 'se_publishDate pcol2'}).text
-                print(date)
+                #print(date)
 
                 content_area = post_area.find('div', {'class', 'se-main-container'})
                 contents = content_area.findAll('p')
                 for content in contents:
                     content = content.text
                     post = post + content
-                    print(content)
+                 #   print(content)
 
             info_list = [title, author, date, post]
 
@@ -818,11 +813,11 @@ def daum_crawling(search_name):
 
         count = html.find('span', {'class', 'txt_info'})
         if (count == None):
-            print("프로그램 종료합니다")
+           # print("프로그램 종료합니다")
             break
         page = count.text.split(" /")[0]
         if (pre_page == page):
-            print("프로그램 종료합니다")
+          #  print("프로그램 종료합니다")
             break
         pre_page = page
         n = n + 1
@@ -835,6 +830,7 @@ def daum_crawling(search_name):
 
         for li in li_s:
             href = li.find('a').attrs['href'].replace("://", "://m.")
+           # print(href)
             r = session.get(href, headers=header)
             html = bs4.BeautifulSoup(r.content, "html.parser")
 
@@ -842,24 +838,24 @@ def daum_crawling(search_name):
             title=re.sub('[^ ㄱ-ㅎ|ㅏ-ㅣ|가-힣a-zA-Z0-9]', '', title)
             if search_name.replace(" ", "") not in title.replace(" ", ""):
                 continue
-            print("제목 : " + title)
+            #print("제목 : " + title)
 
             author = html.find('span', {'class', 'txt_by'}).text
-            print("작성자 : " + author)
+            #print("작성자 : " + author)
 
             date = html.find('time', {'class', 'txt_date'}).text
-            print("작성일시 : " + date)
+            #print("작성일시 : " + date)
 
             post_area = html.find('div', {'class', 'blogview_content'})
 
             texts = post_area.findAll('p')
             post = ''
-            print(
-                "\n----------------------------------------\n" + "게시글\n" + "----------------------------------------\n")
+            #print(
+            #    "\n----------------------------------------\n" + "게시글\n" + "----------------------------------------\n")
             for text in texts:
                 post = post + text.text
 
-            print("\n----------------------------------------\n")
+            #print("\n----------------------------------------\n")
             info_list = [title, author, date, post]
 
             info_lists.append(info_list)

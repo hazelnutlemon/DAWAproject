@@ -200,11 +200,11 @@ class TextRank:
 
 def hot_topic_analyzer(work_name):
     tr = TextRank(window=5, coef=1)
-    print('Load...')
+    #print('Load...')
     stopword = set([('있', 'VV'), ('하', 'VV'), ('되', 'VV'), ('없', 'VV')])
     file_name= 'Crawling\\' + work_name + '.txt'
     tr.load(RawTaggerReader(file_name), lambda w: w not in stopword and (w[1] in ('NNG', 'NNP', 'VV', 'VA')))
-    print('Build...')
+    #print('Build...')
     tr.build()
     kw = tr.extract(0.1)
     title = work_name
