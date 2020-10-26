@@ -1,0 +1,22 @@
+{% extends "layout2.html" %}
+{% block content %}
+{% for obj in data_list2.items%}
+<tbody>
+    <tr>
+        <div>
+        <table>
+      <tr>
+        <td rowspan="4"><img src={{obj.img_src}} width="65" height="98"></td>
+      </tr>
+      <tr>
+          <td colspan="3"><span style = "font-weight: bold; font-size:1.0em;"><a href="{{obj.idnovel}}">>{{obj.title}}</a></span></td>
+      </tr>
+      <tr><td><b>　연령</b> {{obj.age}}</td></tr>
+      <tr><td><b>　장르</b> {{obj.genre}}</td></tr>
+        </table>
+        </div>
+    </tr>
+</tbody>
+
+{% endfor %}
+{% endblock %}

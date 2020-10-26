@@ -1,0 +1,26 @@
+{% extends "layout2.html" %}
+{% block content %}
+{% for obj in data_list2.items%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>lists.html</title>
+</head>
+<body>
+
+<h3>MiniBoard List 전체</h3>
+
+<ul>
+    {% for i in lists2  %}
+    <li>{{ i.title }}</li>
+     <tr>
+        <td colspan="3"><span style = "font-weight: bold; font-size:1.0em;">{{obj.title}}</span></td>
+      </tr>
+    {% endfor %}
+
+</ul>
+
+</body>
+</html>
+{% endfor %}
+{% endblock %}
