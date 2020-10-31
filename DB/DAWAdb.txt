@@ -56,6 +56,12 @@ set foreign_key_checks = 1;>
 <ex. select idnovel, title, replace(img_src, '?type=m260', '') as img_src from novel where img_src like "https://comicthumb%";>
 * 데이터 앞에 추가하기, update에서도 똑같은 방식으로 사용 : concat("추가할 문자열", "컬럼명")
 <ex. select concat("https:", img_src) FROM novel where img_src like "//img.ridicdn.net%";>
+* group_concat(replace(name, ' ', '') separator ' ') as result : 결과를 한 줄로 출력
+<ex. select group_concat(replace(name, ' ', '') separator ' ') as result from author where novel = 1;>
+* avg("속성명") : 평균 / min : 최소 / max : 최대
+<ex. select term, avg(score) from review where score!=0 group by term order by term;>
+* rand() : 랜덤 / limit n : n개 선택
+<ex. select * from novel n left outer join review c on n.idnovel=c.novel where (c.term="2020-10-01") and (c.score>=90) order by rand() limit 3;>
 
 -- 외부 조인(outer join) : select 속성들 left from 테이블1 outer join 테이블2 on 기준;
 * left outer join : 왼쪽에 있는 테이블의 모든 결과를 기준으로 오른쪽 테이블에 매칭. 매칭 데이터가 없다면 NULL.
