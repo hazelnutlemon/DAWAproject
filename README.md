@@ -637,7 +637,7 @@ Analysis Tool
 
 
 
-# ER-Diagram
+# Logical ERD
 ![dawadb_erd](https://user-images.githubusercontent.com/69499057/95684506-26dcd380-0c2d-11eb-8f26-61ede4f3e411.png)
 
 # Web Structure
