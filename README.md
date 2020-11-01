@@ -6,7 +6,7 @@ DAWA는 웹소설의 독자에게 작품 선택에 도움이 될 만한 지표�
 인터넷에 만연히 펴져있는 작품의 데이터를 모아 분석하고 이를 시각적으로 보여주어 독자들은 작품의 특징을 파악할 수 있으며 현재 작품이 독자들에게 받고 있는 평가와 인지도를 한눈에 알아볼 수 있을 것이다.
 
 # 시스템 구조
-<img width="1280" alt="System_Structure" src="https://user-images.githubusercontent.com/69499057/96370776-f4d1f100-1199-11eb-860f-70069f7e85a9.png">
+![System_Structure](https://user-images.githubusercontent.com/69499057/97795915-59d41f00-1c4f-11eb-86b6-5ee244d79fb5.jpg)
 
 ---------------------------------------------------------------------
 작품 정보와 분석에 필요한 Data를 수집하기 위한 사이트 안내.
@@ -639,5 +639,6 @@ Analysis Tool
 
 # ER-Diagram
 ![dawadb_erd](https://user-images.githubusercontent.com/69499057/95684506-26dcd380-0c2d-11eb-8f26-61ede4f3e411.png)
+
 # Web Structure
 (img 첨부예정)
