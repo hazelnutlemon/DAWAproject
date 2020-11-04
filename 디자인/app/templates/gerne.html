@@ -1,0 +1,20 @@
+{% extends "layout2.html" %}
+{% block content %}
+
+<center><table><h3><b>로맨스</b></h3></table></center>
+<br>
+{% for obj in data_list%}
+<div style="display: inline-block; width: 129px; margin-bottom: 20px; text-align:center; vertical-align: top;">
+
+
+<tbody>
+    <table>
+      <tr>
+          <td style="padding-left:5px"><img src={{obj.pic}} width="129" height="195"><br>
+        <span style="font-size:0.9em;"><a href='/content/{{obj.idnovel}}'> {{obj.title}}</a></span></td>
+      </tr>
+    </table>
+</tbody>
+</div>
+{% endfor %}
+{% endblock %}

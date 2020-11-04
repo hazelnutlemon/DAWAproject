@@ -1,0 +1,88 @@
+{% extends "layout2.html" %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>작품 목록</title>
+</head>
+<body>
+<div>
+<h3><b>작품 소개</b></h3>
+
+<ul>
+    {% for i in lists  %}
+    <center>
+    <table>
+      <tr>
+        <td rowspan="11" width="220" align="left"><a href={{i.kakaopage}}><img src={{i.img_src}} width="209" height="319"></a></td>
+      </tr>
+      <tr>
+        <td colspan="3" width="400" align="left"><span style = "font-weight: bold; font-size:1.5em;">　{{i.title}}</span></td>
+      </tr>
+        <tr><td><b>　작가</b> {{i.author}}</td></tr>
+      <tr><td><b>　연령</b> {{i.age}}</td></tr>
+      <tr><td><b>　출간일</b> {{i.pub_date}}</td></tr>
+      <tr><td><b>　장르</b> {{i.genre}}</td></tr>
+      <tr><td><b>　출판</b> {{i.publisher}}</td></tr>
+      <tr><td><b>　연재화수</b> {{i.total}}</td></tr>
+        <tr><td><b>  　</b><b>{{i.complete}}</b></td></tr>
+        <tr><td><span vertical-align="middle"><b>　연재처　</b><a href={{i.serieson}}><img src="https://ssl.pstatic.net/static/nstore/ogtag_series.png" width="30" height="30"></a>
+         <a href={{i.kakaopage}}><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAY1BMVEX/0gAAAAD/////1wDLpwD8/Pz/0AD/0wD/1QD/2BL/1Rf/99n/1Sz/9tL/5Wz//PL/43D///r/8sP/3lH9+eb/4GL/77D/8r7vxQD/2Dz+7af+7KHGowD/2UX/1SP//Oz91jTUNI4qAAAC/0lEQVR4nO3dzVLbQBBF4ckYIlmONfq1wBjD+z8lpojBhLCh6L7D1Dkbtv0VHaEmqTjEc2nad2MTfn7N2O2n9OoKf7/2w1yHWj3c91SdJPPQvxemdq2e65tbt+lSuKjnMWl5E+6aSj2NQVWzOwuXEp4v/6tZXoQplPgdfCk9C/tWPYZhbX8SDqU9RS9bDzGkWT2FaXMKUyE/5j+pnsKdegbj9qEr90H6XN2FsWxhNYajegbjmoJ/2hMRERERERERERERfVa1yieT39RXN4erXDrcWPyt5+rwK58OKwvhlZp10RVChAjlIUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUB9ChAj1IUSIUF/5wp/zfwxdx+uvtHk0AFoJv9Lm3gKYkXD687ts4cYImI1we28EzEX4cLQCZiI0W9FchNtbO2AWwmS3onkILVc0C6HpiuYgTNYfoKYWbk3/DGYg3Nwa+9TCB9uHjF5ov6Ji4cbsXTQTodW5lI1w6wPUCX1WVCh0WlGd0PhdVC+0u+gzERpe9HkIHVdUI7Q+l+RC83NJLXR5F1UKnVfUX2j7S6cMhO4r6i10uOi1Qo+LXipUrKir0O1cUgn9ziWR0PddVCD0PJckQtmKegl1K+okFK6oj9D1olcIpSvqIfQ/l5yF3he9u1D0LuonlJxLnsIkfsiYCzNY0WAqzGFFg6VQc9F/zEyYx4oGO6Hqov+YkVB5Lv2TjVD9LnqZyWc657OiweZzuQ+PatW7aoPPSFebiIiIiIiIiIiIiKikKvUA5sn/FYtxTRjL/iZWY+jKFtZduFPPYNw+TLV6BtPqKaRZPYRpcwpxWKunMGw9xBD7Vj2GYW1/EsakHsOwFJ+FcWnUgxjVLPFFGHdlEptdPAvjoh7GpCW+CWNqS3uirtsUL4WxH+Y61GW8wVVVqOehj++Fp2/jtO/G4883Vsex20/p1fUEY5RtXp0sRowAAAAASUVORK5CYII=" width="30" height="30"></a>
+      <a href={{i.munpia}}><img src="https://t2.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/6mgK/image/rbvkD8YG0JFfKh3caXqEWEvE8A4.png" width="30" height="30"></a>
+         <a href={{i.ridibooks}}><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQM63Pv4dcYxTQkckZH8xAlCH-JSn5tuvoqww&usqp=CAU" width="30" height="30"></a>
+            <a href={{i.joara}}><img src="https://t1.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/6mgK/image/PEG7pdnEke21BM9wVA26f-HDaKA.png" width="30" height="30"></a></span></td></tr>
+        </table>
+    <div>
+        <p><b>소개</b> {{i.intro}}</p>
+      </div></center>
+</ul>
+        </div>
+        <center>
+            <br>
+
+
+   <center>
+       <br>
+    <table>
+        <tr><td width="80" align="left"><b>keyword</b></td>
+      <td><b>　#</b>{{i.word1}}</td>
+      <td><b>　#</b>{{i.word2}}</td>
+      <td><b>　#</b>{{i.word3}}</td>
+      <td><b>　#</b>{{i.word4}}</td>
+      <td><b>　#</b>{{i.word5}}</td></tr>
+        <tr><td width="80" align="left"><b>캐릭터</b></td>
+      <td><b>　#</b>{{i.c_reaction1}}</td>
+      <td><b>　#</b>{{i.c_reaction2}}</td>
+      <td><b>　#</b>{{i.c_reaction3}}</td>
+      <td><b>　#</b>{{i.c_reaction4}}</td>
+      <td><b>　#</b>{{i.c_reaction5}}</td></tr>
+        <tr><td width="80" align="left"><b>분위기</b></td>
+      <td><b>　#</b>{{i.m_reaction1}}</td>
+      <td><b>　#</b>{{i.m_reaction2}}</td>
+      <td><b>　#</b>{{i.m_reaction3}}</td>
+      <td><b>　#</b>{{i.m_reaction4}}</td>
+      <td><b>　#</b>{{i.m_reaction5}}</td></tr>
+        <tr><td width="80" align="left"><b>스토리</b></td>
+      <td><b>　#</b>{{i.s_reaction1}}</td>
+      <td><b>　#</b>{{i.s_reaction2}}</td>
+      <td><b>　#</b>{{i.s_reaction3}}</td>
+      <td><b>　#</b>{{i.s_reaction4}}</td>
+      <td><b>　#</b>{{i.s_reaction5}}</td></tr>
+    </table>
+       </center>
+            </center>
+
+    {% endfor %}
+<center>
+    <br>
+
+    <img src="https://blog.kakaocdn.net/dn/bjFQZ1/btqMrjFlKNB/kuWEaw1YP0eEgqs9LgumPk/img.png" srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&amp;fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjFQZ1%2FbtqMrjFlKNB%2FkuWEaw1YP0eEgqs9LgumPk%2Fimg.png" width="568" height="426">
+</br>
+</center>
+</ul>
+</div>
+</body>
+</html>
+
+{% endblock %}

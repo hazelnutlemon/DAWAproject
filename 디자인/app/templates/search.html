@@ -1,0 +1,83 @@
+{% extends "layout2.html" %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>검색 결과</title>
+</head>
+<body>
+
+<h3><b>작품 소개</b></h3>
+
+<ul>
+    {% for i in contentList  %}
+<center>
+    <table>
+      <tr>
+        <td rowspan="11" width="220" align="left"><a href={{i.kakaopage}}><img src={{i.img_src}} width="209" height="319"></a></td>
+      </tr>
+      <tr>
+        <td colspan="3" width="400" align="left"><span style = "font-weight: bold; font-size:1.5em;"> {{i.title}}</span></td>
+      </tr>
+        <tr><td><b>　작가</b> {{i.author}}</td></tr>
+      <tr><td><b>　연령</b> {{i.age}}</td></tr>
+      <tr><td><b>　출간일</b> {{i.pub_date}}</td></tr>
+      <tr><td><b>　장르</b> {{i.genre}}</td></tr>
+      <tr><td><b>　출판</b> {{i.publisher}}</td></tr>
+      <tr><td><b>　연재화수</b> {{i.total}}</td></tr>
+        <tr><td><b>  　</b><b>{{i.complete}}</b></td></tr>
+        <tr><td><span vertical-align="middle"><b>　연재처　</b><a href={{i.serieson}}><img src="https://ssl.pstatic.net/static/nstore/ogtag_series.png" width="30" height="30"></a>
+      <a href={{i.munpia}}><img src="https://t2.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/6mgK/image/rbvkD8YG0JFfKh3caXqEWEvE8A4.png" width="30" height="30"></a>
+         <a href={{i.ridibooks}}><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQM63Pv4dcYxTQkckZH8xAlCH-JSn5tuvoqww&usqp=CAU" width="30" height="30"></a>
+            <a href={{i.joara}}><img src="https://t1.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/6mgK/image/PEG7pdnEke21BM9wVA26f-HDaKA.png" width="30" height="30"></a></span></td></tr>
+
+        </table>
+    <div>
+        <p><b>소개</b> {{i.intro}}</p>
+      </div></center>
+        </div>
+        <center>
+            <br>
+   <center>
+    <table>
+        <tr><td width="80" align="left"><b>keyword</b></td>
+      <td><b>　#</b>{{i.word1}}</td>
+      <td><b>　#</b>{{i.word2}}</td>
+      <td><b>　#</b>{{i.word3}}</td>
+      <td><b>　#</b>{{i.word4}}</td>
+      <td><b>　#</b>{{i.word5}}</td></tr>
+        <tr><td width="80" align="left"><b>캐릭터</b></td>
+      <td><b>　#</b>{{i.c_reaction1}}</td>
+      <td><b>　#</b>{{i.c_reaction2}}</td>
+      <td><b>　#</b>{{i.c_reaction3}}</td>
+      <td><b>　#</b>{{i.c_reaction4}}</td>
+      <td><b>　#</b>{{i.c_reaction5}}</td></tr>
+        <tr><td width="80" align="left"><b>분위기</b></td>
+      <td><b>　#</b>{{i.m_reaction1}}</td>
+      <td><b>　#</b>{{i.m_reaction2}}</td>
+      <td><b>　#</b>{{i.m_reaction3}}</td>
+      <td><b>　#</b>{{i.m_reaction4}}</td>
+      <td><b>　#</b>{{i.m_reaction5}}</td></tr>
+        <tr><td width="80" align="left"><b>스토리</b></td>
+      <td><b>　#</b>{{i.s_reaction1}}</td>
+      <td><b>　#</b>{{i.s_reaction2}}</td>
+      <td><b>　#</b>{{i.s_reaction3}}</td>
+      <td><b>　#</b>{{i.s_reaction4}}</td>
+      <td><b>　#</b>{{i.s_reaction5}}</td></tr>
+    </table>
+       </center>
+
+    {% endfor %}
+        </center>
+    <center>
+    <br>
+
+    <img src="https://blog.kakaocdn.net/dn/75fPN/btqMkno45pJ/pSDa9Mwqe8TNtCiZtPxQcK/img.png" srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&amp;fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F75fPN%2FbtqMkno45pJ%2FpSDa9Mwqe8TNtCiZtPxQcK%2Fimg.png" width="568" height="426">
+<br>
+</center>
+</ul>
+</body>
+</html>
+
+{% endblock %}
